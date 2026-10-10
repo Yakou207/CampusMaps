@@ -1,0 +1,104 @@
+/* Hallmark · genre: playful · macrostructure: custom (map-first app) · theme: custom "sketchbook"
+ * vibe: "warm sketchbook campus map, pencil ink, persimmon"
+ * paper oklch(96.5% 0.014 85) · accent oklch(62% 0.16 42) persimmon
+ * display: LXGW WenKai (subset, OFL) · body: system sans (PingFang / YaHei)
+ * axes: light / handwritten-kai / warm · nav: map bar (custom) · footer: none (app view)
+ * Every colour, font, size and timing on the site comes from this file.
+ */
+
+@font-face {
+  font-family: "LXGW WenKai Subset";
+  src: url("../fonts/wenkai-400.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "LXGW WenKai Subset";
+  src: url("../fonts/wenkai-500.woff2") format("woff2");
+  font-weight: 500 700;
+  font-display: swap;
+}
+
+:root {
+  /* paper & ink */
+  --color-paper:        oklch(96.5% 0.014 85);
+  --color-paper-2:      oklch(93.5% 0.018 82);
+  --color-paper-3:      oklch(90%   0.022 80);
+  --color-surface:      oklch(98.6% 0.008 85);
+  --color-rule:         oklch(82%   0.020 75);
+  --color-neutral:      oklch(58%   0.020 65);
+  --color-muted:        oklch(46%   0.020 60);
+  --color-ink:          oklch(26%   0.020 55);
+  --color-ink-hover:    oklch(33%   0.030 50);
+
+  /* accent: persimmon */
+  --color-accent:       oklch(62%   0.160 42);
+  --color-accent-ink:   oklch(50%   0.150 40);
+  --color-accent-wash:  oklch(91%   0.045 55);
+  --color-focus:        oklch(52%   0.170 42);
+
+  /* feedback */
+  --color-ok:           oklch(48%   0.110 150);
+  --color-ok-wash:      oklch(93.5% 0.040 150);
+  --color-error:        oklch(50%   0.170 28);
+  --color-error-wash:   oklch(94%   0.035 28);
+
+  /* map palette */
+  --map-ground:         oklch(92.5% 0.022 88);
+  --map-campus:         oklch(96.5% 0.016 85);
+  --map-green:          oklch(90%   0.050 128);
+  --map-wood:           oklch(87%   0.060 135);
+  --map-farm:           oklch(92%   0.040 110);
+  --map-pitch:          oklch(88%   0.060 150);
+  --map-water:          oklch(86%   0.045 225);
+  --map-water-ink:      oklch(56%   0.070 230);
+  --map-green-ink:      oklch(52%   0.070 140);
+  --map-building:       oklch(91%   0.022 78);
+  --map-building-shade: oklch(80%   0.030 70);
+  --map-canteen:        oklch(86%   0.080 55);
+  --map-canteen-active: oklch(80%   0.110 50);
+  --map-road:           oklch(98.6% 0.008 85);
+  --map-pencil:         oklch(34%   0.020 55);
+
+  /* type */
+  --font-display: "LXGW WenKai Subset", "Kaiti SC", "STKaiti", "KaiTi", serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB",
+               "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  --text-2xs: 0.6875rem;
+  --text-xs:  0.75rem;
+  --text-sm:  0.875rem;
+  --text-md:  1rem;
+  --text-lg:  1.1875rem;
+  --text-xl:  1.5rem;
+  --text-2xl: 2rem;
+  --text-display: clamp(2.25rem, 4vw + 1rem, 3.75rem);
+
+  /* space (4pt) */
+  --space-3xs: 0.125rem;
+  --space-2xs: 0.25rem;
+  --space-xs:  0.5rem;
+  --space-sm:  0.75rem;
+  --space-md:  1rem;
+  --space-lg:  1.5rem;
+  --space-xl:  2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4.5rem;
+
+  /* shape */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-pill: 999px;
+  --radius-sketch: 255px 14px 225px 14px / 14px 225px 14px 255px;
+  --rule-hair: 1px solid var(--color-rule);
+  --rule-ink: 1.5px solid var(--color-ink);
+  --shadow-paper: 0 1px 0 var(--color-rule), 0 14px 30px -18px oklch(30% 0.04 55 / 0.55);
+  --shadow-lift:  0 2px 0 var(--color-rule), 0 18px 36px -18px oklch(30% 0.05 55 / 0.6);
+
+  /* motion */
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in:     cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-micro: 120ms;
+  --dur-short: 220ms;
+  --dur-long:  420ms;
+}

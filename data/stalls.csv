@@ -1,0 +1,86 @@
+﻿id,canteen_id,name_zh,name_en,category,price,hours,lat,lon,photo,pick,desc_zh,desc_en,osm_id
+s001,c01,CV自选餐,CV Self-Serve Meals,meals,,,22.36286,113.5119073,,0,,,n13606936240
+s002,c01,原味猪杂汤饭,Pork Offal Soup Rice,rice,,,22.3625524,113.5116246,,0,,,n13597204666
+s003,c01,广式烧腊,Cantonese Roast Meats,rice,,,22.3626193,113.5118186,,0,,,n13597204669
+s004,c01,牛肉面·东北饺子·螺蛳粉,Beef Noodles · Dumplings · Luosifen,noodles,,,22.3625701,113.5115446,,0,,,n13597204664
+s005,c01,王喜峰,Wang Xifeng Spicy Hot Pot,spicy,,,22.3626081,113.51147,,0,,,n13597204670
+s006,c01,高手卤肉饭,Gaoshou Braised Pork Rice,rice,,,22.3625723,113.5117557,,0,,,n13597204668
+s007,c03,吉祥 麻辣烫,Jixiang Malatang,spicy,,,22.3542134,113.5133522,,0,,,n13640010032
+s008,c03,和风拉面,Japanese-style Ramen,noodles,,,22.3542317,113.5134351,,0,,,n13739739840
+s009,c03,明洞拌饭,Myeongdong Bibimbap,rice,,,22.3542308,113.5134222,,0,,,n13470708421
+s010,c03,李思甜水果捞,Li Sitian Fruit Bowls,snacks,,,22.3542268,113.5133768,,0,,,n13470708422
+s011,c03,渝掌柜 板凳面,Yu Zhanggui Bench Noodles,noodles,,,22.3542455,113.5135991,,0,,,n11146188488
+s012,c04,Mr. Wu 卤肉卷,Mr. Wu Braised Pork Wraps,snacks,,,22.3534606,113.5134192,,0,,,n13470708425
+s013,c04,三津汤包,Sanjin Soup Dumplings,dumplings,,,22.3538761,113.5135825,,0,,,n13842001378
+s014,c04,东北人家,Northeastern Home Kitchen,meals,,,22.3539053,113.5135207,,0,,,n11733097046
+s015,c04,伴飽,Yummy-For-Tummy,other,,,22.3534061,113.5133865,,0,,,n13842020885
+s016,c04,八爪鱼寿司,Octopus Sushi,rice,,,22.3533114,113.5134232,,0,,,n14139004821
+s017,c04,北方手工水饺,Handmade Northern Dumplings,dumplings,,,22.3537913,113.5136554,,0,,,n14112298207
+s018,c04,卤味熟食,Braised Deli,snacks,,,22.3533351,113.5133802,,0,,,n13597204665
+s019,c04,味正香 自选套餐,Weizhengxiang Set Meals,meals,,,22.3538534,113.5136311,,0,,,n13842001381
+s020,c04,弄潮,Nongchao,other,,,22.3532766,113.5134714,,0,,,n14139004816
+s021,c04,房记云妈罐罐米线,Fang's Clay-pot Rice Noodles,noodles,,,22.3531992,113.5135699,,0,,,n14114009004
+s022,c04,拌壹桶 干拌冒菜,Banyitong Dry-tossed Maocai,spicy,,,22.3532421,113.5135119,,0,,,n14114009003
+s023,c04,柳州螺蛳粉,Liuzhou Luosifen,noodles,,,22.3537453,113.5135262,,0,,,n14114009002
+s024,c04,海南鸡饭,Hainan Chicken Rice,rice,,,22.3538096,113.5136638,,0,,,n14112298206
+s025,c04,港式小厨,Hong Kong-style Kitchen,meals,,,22.3537286,113.5135648,,0,,,n14112298205
+s026,c04,蜜雪冰城,Mixue,drinks,,,22.3532637,113.5136537,,0,,,n11723871925
+s027,c04,重庆小面,Chongqing Noodles,noodles,,,22.3537718,113.513646,,0,,,n14113990200
+s028,c04,阿姨猪脚饭,Auntie's Pork Trotter Rice,rice,,,22.3538947,113.5135459,,0,,,n14112298208
+s029,c04,顺德干蒸菜,Shunde Steamed Dishes,meals,,,22.3537663,113.5134822,,0,,,n13842001377
+s030,c04,黄大厨麻辣烫,Chef Huang Malatang,spicy,,,22.3539184,113.5134474,,0,,,n14114009001
+s031,c05,小街胡同牛杂面,Hutong Beef Offal Noodles,noodles,,,22.3535194,113.5133404,,0,,,n13470708424
+s032,c05,志少侠铁板饭,Zhi Shaoxia Teppan Rice,rice,,,22.3535259,113.5133665,,0,,,n13640010036
+s033,c07,喜记云饺,Xiji Wontons & Dumplings,dumplings,,,22.3532918,113.5127754,,0,,,n11733097050
+s034,c07,戴维斯,Davis,other,,,22.3532575,113.5127673,,0,,,n12208940811
+s035,c07,桂源祥,Guiyuanxiang,other,,,22.3532324,113.512789,,0,,,n13589512019
+s036,c07,湘聚缘,Xiangjuyuan Hunan Kitchen,meals,,,22.353216,113.5128178,,0,,,n12208940812
+s037,c07,香纯茶栈,Pure Tea House,drinks,,,22.3532501,113.5128603,,0,,,n14139004818
+s038,c08,云南米线,Yunnan Rice Noodles,noodles,,,22.353426,113.5170804,,0,,,n13190127125
+s039,c08,大众自选 中式早餐,Self-Serve & Chinese Breakfast,meals,,,22.3533582,113.5173213,,0,,,n11733097045
+s040,c08,果逗茶,Guodou Tea,drinks,,,22.3534054,113.5174498,,0,,,n14139004820
+s041,c08,汤粉世家,Soup Noodle House,noodles,,,22.3534,113.5171576,,0,,,n14139004811
+s042,c08,港式烧腊,Hong Kong Roast Meats,rice,,,22.3533911,113.5171907,,0,,,n11733097055
+s043,c08,牛肉饭,Beef Rice Bowls,rice,,,22.3534124,113.5171168,,0,,,n11733097051
+s044,c08,肯德基,KFC,fastfood,,,22.3531918,113.5174572,,0,,,n11141455264
+s045,c08,轻食,Light Meals,meals,,,22.3533779,113.5172333,,0,,,n14139004819
+s046,c08,麻辣烫,Malatang,spicy,,,22.3534009,113.5173968,,0,,,n14139004817
+s047,c09,中盈餐厅,Zhongying Restaurant,meals,,,22.3530072,113.5126489,,0,,,n11199597079
+s048,c09,屿司,Is.To,other,,,22.3531644,113.5125157,,0,,,n14142426069
+s049,c09,得一煲仔饭,Deyi Clay-pot Rice,rice,,,22.3531245,113.5125344,,0,,,n14142426070
+s050,c09,缥雪,Piaoxue,other,,,22.3531411,113.512547,,0,,,n13470708430
+s051,c09,花间小点,Huajian Bites,snacks,,,22.3530924,113.5126131,,0,,,n13470708431
+s052,c09,遇见,Yujian,other,,,22.3531038,113.5125094,,0,,,n14142426072
+s053,c09,青禾巷裡,Qinghe Lane,other,,,22.3531223,113.5124758,,0,,,n14142426071
+s054,c10,好香趣小吃,Haoxiangqu Snacks,snacks,,,22.3529621,113.5131732,,0,,,n13470708429
+s055,c10,小杨哥猪脚饭,Xiao Yang Pork Trotter Rice,rice,,,22.3531356,113.512982,,0,,,n13640010037
+s056,c10,牛坤记 沙县小吃,Niukunji Shaxian Snacks,snacks,,,22.353107,113.5129667,,0,,,n11199597082
+s057,c10,花甲粉 砂锅米线,Clam Vermicelli & Clay-pot Noodles,noodles,,,22.3530961,113.5130486,,0,,,n13470708427
+s058,c10,记忆小笼包 原味汤粉王,Jiyi Xiaolongbao & Soup Noodles,dumplings,,,22.3531237,113.5130043,,0,,,n13470708426
+s059,c10,黄焖鸡米饭,Braised Chicken Rice,rice,,,22.3530737,113.5130922,,0,,,n13470708428
+s060,c11,必胜客,Pizza Hut,fastfood,,,22.3515733,113.5165237,,0,,,n13052159142
+s061,c11,星巴克,Starbucks,drinks,,,22.3515502,113.5164861,,0,,,n13190127127
+s062,c11,穆味王 私房牛肉面,Home Beef Noodles,noodles,,,22.3515812,113.5166175,,0,,,n13589512017
+s063,c11,遇见小面,Yujian Noodles,noodles,,,22.3515332,113.5165289,,0,,,n13190127126
+s064,c11,麦当劳,McDonald's,fastfood,,,22.3515775,113.516458,,0,,,n13184049732
+s065,,瑞幸咖啡（T2）,Luckin Coffee (T2),drinks,,,22.3522708,113.5150441,,0,,,n11141455261
+s066,,Yo健康料理,Yo Healthy Kitchen,meals,,,22.3521491,113.5136542,,0,,,n11723871929
+s067,,一点点,Alittle-tea,drinks,,,22.3524155,113.5133619,,0,,,n11146188482
+s068,,东北阿龙烧烤吧,A-Long Northeastern BBQ,meals,,,22.35013,113.5152324,,0,,,n12855395420
+s069,c12,云湘味,Yunxiangwei,meals,,,22.3522178,113.5135281,,0,,,n11723871937
+s071,,同心泥烩鸡,Tongxin Clay-baked Chicken,meals,,,22.3560562,113.511679,,0,,,n13249306390
+s072,,塔斯汀中国汉堡,Tastien Chinese Burger,fastfood,,,22.3545469,113.5132227,,0,,,n11180462965
+s073,,尝绿,Changlü,other,,,22.3521539,113.5137389,,0,,,n11155323622
+s074,,屿可,Yekoo,other,,,22.3545593,113.5134461,,0,,,n13470708419
+s075,,常来·港记冰室,Changlai HK Café,meals,,,22.3545342,113.5132907,,0,,,n13470708420
+s076,c12,广式拉肠,Cantonese Rice Rolls,snacks,,,22.3521974,113.5135148,,0,,,n11723871927
+s077,,库迪咖啡,Cotti Coffee,drinks,,,22.3535423,113.5134323,,0,,,n11723871923
+s078,,心潮,Xinchao,other,,,22.3521591,113.5135701,,0,,,n11723871924
+s079,c12,拾圆·排骨掂,Shiyuan Pork Ribs,meals,,,22.3522379,113.5135398,,0,,,n11723871931
+s080,,浮屿,For You,other,,,22.3518395,113.5165564,,0,,,n11160357959
+s081,,烩坊 泥煨鸡,Huifang Clay-baked Chicken,meals,,,22.3556672,113.5112857,,0,,,n13249306384
+s082,,瑞幸咖啡（一期）,Luckin Coffee (Phase 1),drinks,,,22.3537662,113.5127456,,0,,,n11206950143
+s083,,瑞幸咖啡（二期）,Luckin Coffee (Phase 2),drinks,,,22.3616772,113.5107421,,0,,,n14139004812
+s084,,简也茶集,Can Tea,drinks,,,22.360605,113.5111361,,0,,,n11671590288
+s085,,贤贤居餐厅,Staff's Club,meals,,,22.3511055,113.5162458,,0,,,n12207172200
+s086,,雾鲜,Wuxian,other,,,22.3521219,113.5137204,,0,,,n11723871926

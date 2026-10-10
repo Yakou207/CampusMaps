@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/map.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/panel.css') }}">
+{% endblock %}
+{% block body_class %}page-map{% endblock %}
+{% block content %}
+<header class="map-bar">
+  <a class="brand" href="{{ url_for('index') }}" aria-label="BNBU 食堂地图 Campus Food Map — 首页 home">
+    <span class="brand-zh">BNBU 食堂地图</span>
+    <span class="brand-en">Campus Food Map</span>
+  </a>
+
+  <div class="search" role="search">
+    <label class="visually-hidden" for="search-input">搜索摊位或菜品 · Search stalls or dishes</label>
+    <svg class="search-icon" aria-hidden="true"><use href="#i-search"/></svg>
+    <input id="search-input" class="search-input" type="search" autocomplete="off" spellcheck="false"
+           placeholder="搜摊位、菜品… Search food"
+           role="combobox" aria-expanded="false" aria-controls="search-results" aria-autocomplete="list">
+    <ul id="search-results" class="search-results" role="listbox" aria-label="搜索结果 Search results" hidden></ul>
+  </div>
+
+  <nav class="map-nav" aria-label="快捷入口 Shortcuts">
+    <button class="chip" type="button" data-open-list="picks"><span class="short">推荐</span><span class="long">新生推荐</span> <span class="en">Picks</span></button>
+    <button class="chip" type="button" data-open-list="top"><span class="short">排行</span><span class="long">评分榜</span> <span class="en"><span class="short">Top</span><span class="long">Top rated</span></span></button>
+    <a class="chip" href="{{ url_for('about') }}">关于 <span class="en">About</span></a>
+  </nav>
+</header>
+
+<main id="main" class="map-view" aria-label="校园地图 Campus map" tabindex="-1">
+  <div id="map-stage" class="map-stage"></div>
+  <div id="map-markers" class="map-markers" aria-label="食堂与摊位 Canteens and stalls"></div>
+  <p id="map-status" class="map-status" role="status">正在铺开地图… <span class="en">Unfolding the map…</span></p>
+</main>
+
+<div class="map-controls" role="group" aria-label="地图缩放 Map zoom">
+  <button type="button" class="map-btn" data-zoom="in" aria-label="放大 Zoom in"><svg aria-hidden="true"><use href="#i-plus"/></svg></button>
+  <button type="button" class="map-btn" data-zoom="out" aria-label="缩小 Zoom out"><svg aria-hidden="true"><use href="#i-minus"/></svg></button>
+  <button type="button" class="map-btn" data-zoom="reset" aria-label="回到全图 Show whole campus"><svg aria-hidden="true"><use href="#i-home"/></svg></button>
+</div>
+
+<p class="map-credit">地图数据 Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors</p>
+
+<section id="panel" class="panel" role="dialog" aria-modal="false" aria-labelledby="panel-title" hidden>
+  <div class="panel-card">
+    <div class="panel-grip" aria-hidden="true"><span></span></div>
+    <span class="panel-arrow" aria-hidden="true"></span>
+    <button type="button" class="panel-close" aria-label="关闭 Close"><svg aria-hidden="true"><use href="#i-close"/></svg></button>
+    <div class="panel-body"></div>
+  </div>
+</section>
+{% endblock %}
+{% block scripts %}
+  <script src="{{ url_for('static', filename='vendor/d3-7.9.0.min.js') }}"></script>
+  <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% endblock %}

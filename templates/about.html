@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block title %}关于 · About — BNBU 食堂地图{% endblock %}
+{% block head %}<link rel="stylesheet" href="{{ url_for('static', filename='css/about.css') }}">{% endblock %}
+{% block body_class %}page-about{% endblock %}
+{% block content %}
+<header class="doc-bar">
+  <a class="brand" href="{{ url_for('index') }}">
+    <span class="brand-zh">BNBU 食堂地图</span>
+    <span class="brand-en">Campus Food Map</span>
+  </a>
+  <a class="btn" href="{{ url_for('index') }}">回到地图 <span class="en">Map</span></a>
+</header>
+
+<main id="main" class="doc">
+  <section class="doc-intro">
+    <h1>校园里每个吃饭的地方，<br>都在这张图上。</h1>
+    <p class="lede">Every canteen and food stall on the BNBU campus, on one hand-drawn map — rated by the students who eat there.</p>
+    <p>刚来北师港浸大的第一周，最常见的问题是“今天去哪吃”。外卖平台和点评网站只收录了校内少数几家店，而且大多是中文。我们把一期、二期的
+      {{ canteen_count }} 处食堂和 {{ stall_count }} 个摊位画到一张地图上，中英双语，每个摊位都可以打分、写一句评价。</p>
+    <p class="en-block">Made for freshers and international students: find food near your next class, see what other students think, and add your own rating in a few seconds.</p>
+  </section>
+
+  <section class="doc-section" aria-labelledby="how-title">
+    <h2 id="how-title">怎么用 <span class="en">How it works</span></h2>
+    <ol class="steps">
+      <li><strong>打开地图，点一个食堂。</strong> 旁边会弹出它所有的摊位和评分。<span class="en">Open the map and tap a canteen to see its stalls.</span></li>
+      <li><strong>点进摊位，看看大家怎么说。</strong> 也可以用顶部搜索直接找菜名，比如“米线”或 “noodles”。<span class="en">Tap a stall for reviews, or search for a dish.</span></li>
+      <li><strong>吃完回来打个分。</strong> 只选星级就能提交，评论可以不写。<span class="en">Rate it after you eat — stars are enough, a comment is optional.</span></li>
+    </ol>
+  </section>
+
+  <section class="doc-section" aria-labelledby="rules-title">
+    <h2 id="rules-title">评分规则 <span class="en">How ratings work</span></h2>
+    <ul class="rules">
+      <li>不用注册。浏览器会生成一个随机编号来记住你评过哪些摊位，我们不收集姓名、学号或手机号。<span class="en">No sign-up. Your browser keeps a random id so you can edit your own ratings; we never ask who you are.</span></li>
+      <li>每个摊位每人只算一次，再评一次会覆盖之前的评分。<span class="en">One rating per person per stall — rating again updates it.</span></li>
+      <li>评论最多 200 字，会公开显示，但不会显示你是谁。<span class="en">Comments (up to 200 characters) are public but anonymous.</span></li>
+      <li>食堂的分数是它所有摊位收到的评分的平均值。<span class="en">A canteen's score is the average of every rating its stalls received.</span></li>
+    </ul>
+  </section>
+
+  <section class="doc-section" id="suggest" aria-labelledby="suggest-title">
+    <h2 id="suggest-title">补充摊位或纠错 <span class="en">Add a stall or fix a mistake</span></h2>
+    <p>摊位换得很快，光靠我们几个人跟不上。看到新开的、关门的或信息不对的，告诉我们一声。
+      <span class="en">Stalls change often. Tell us about new ones, closed ones, or anything we got wrong.</span></p>
+
+    <form id="suggest-form" class="suggest-form" novalidate>
+      <fieldset class="field kind-field" aria-describedby="err-kind">
+        <legend class="field-label">这是关于… <span class="en">This is about…</span></legend>
+        <div class="kind-options">
+          <label class="kind-option"><input type="radio" name="kind" value="new_stall"> 新摊位 <span class="en">A new stall</span></label>
+          <label class="kind-option"><input type="radio" name="kind" value="correction"> 信息纠错 <span class="en">A correction</span></label>
+          <label class="kind-option"><input type="radio" name="kind" value="other"> 其他 <span class="en">Something else</span></label>
+        </div>
+        <p class="field-error" id="err-kind"></p>
+      </fieldset>
+
+      <div class="field">
+        <label class="field-label" for="f-canteen">在哪个食堂 <span class="en">Where</span></label>
+        <select class="select" id="f-canteen" name="canteen_id" aria-describedby="err-canteen_id">
+          <option value="">不确定 / 不在食堂里 · Not sure / standalone</option>
+          {% for c in canteens %}
+          <option value="{{ c.id }}">{{ c.name_zh }} · {{ c.name_en }}</option>
+          {% endfor %}
+        </select>
+        <p class="field-error" id="err-canteen_id"></p>
+      </div>
+
+      <div class="field" id="stall-field">
+        <label class="field-label" for="f-stall">摊位名称 <span class="en">Stall name</span> <span class="req" id="stall-req">必填 · required</span></label>
+        <input class="input" id="f-stall" name="stall_name" maxlength="40" autocomplete="off" aria-describedby="err-stall_name">
+        <p class="field-error" id="err-stall_name"></p>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="f-message">具体说说 <span class="en">Details</span> <span class="req">必填 · required</span></label>
+        <textarea class="textarea" id="f-message" name="message" maxlength="500" rows="4"
+                  placeholder="卖什么、大概价格、营业时间，或者哪里写错了 · What they sell, price, opening hours, or what's wrong"
+                  aria-describedby="hint-message err-message"></textarea>
+        <p class="field-hint" id="hint-message"><span data-count>0</span> / 500</p>
+        <p class="field-error" id="err-message"></p>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="f-contact">联系方式（可选）<span class="en">Contact (optional)</span></label>
+        <input class="input" id="f-contact" name="contact" maxlength="100" autocomplete="email" aria-describedby="hint-contact err-contact">
+        <p class="field-hint" id="hint-contact">微信或邮箱，方便我们追问；不会公开。<span class="en">WeChat or email in case we have a question. Never shown publicly.</span></p>
+        <p class="field-error" id="err-contact"></p>
+      </div>
+
+      <p class="form-note">提交的内容会存入我们的数据库，由团队核实后更新到地图上。<span class="en">What you send is saved to our database and checked by the team before it appears on the map.</span></p>
+      <p class="form-status" id="suggest-status" role="status" aria-live="polite"></p>
+      <button class="btn btn-primary" type="submit">提交 <span class="en">Send</span></button>
+    </form>
+
+    <div class="suggest-done" id="suggest-done" hidden tabindex="-1">
+      <p class="suggest-done-title">收到了，谢谢！</p>
+      <p>Got it — thank you. We'll check it and update the map.</p>
+      <div class="suggest-done-actions">
+        <button class="btn" type="button" id="suggest-again">再提交一条 <span class="en">Send another</span></button>
+        <a class="btn btn-primary" href="{{ url_for('index') }}">回到地图 <span class="en">Back to map</span></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="doc-section" aria-labelledby="credits-title">
+    <h2 id="credits-title">数据与致谢 <span class="en">Data &amp; credits</span></h2>
+    <ul class="rules">
+      <li>底图数据来自 <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap contributors</a>（ODbL 许可）。手绘风格、楼宇简化和食堂标注由团队完成。<span class="en">Base map data © OpenStreetMap contributors (ODbL); the sketch styling and canteen annotations are the team's work.</span></li>
+      <li>字体：<a href="https://github.com/lxgw/LxgwWenKai" target="_blank" rel="noopener">霞鹜文楷 LXGW WenKai</a>（SIL Open Font License）。<span class="en">Typeface: LXGW WenKai, SIL OFL 1.1.</span></li>
+      <li>地图缩放：<a href="https://d3js.org/" target="_blank" rel="noopener">D3.js</a>（ISC 许可）。<span class="en">Pan and zoom: D3.js, ISC licence.</span></li>
+      <li>这是 BNBU 课程项目，与学校官方无关。<span class="en">A BNBU student course project, not an official university service.</span></li>
+    </ul>
+  </section>
+</main>
+{% endblock %}
+{% block scripts %}
+  <script type="module" src="{{ url_for('static', filename='js/about.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}找不到页面 · Not found — BNBU 食堂地图{% endblock %}
+{% block head %}<link rel="stylesheet" href="{{ url_for('static', filename='css/about.css') }}">{% endblock %}
+{% block content %}
+<main id="main" class="doc">
+  <section class="not-found">
+    <h1>这一页走丢了</h1>
+    <p>This page doesn't exist — maybe the link is out of date.</p>
+    <a class="btn btn-primary" href="{{ url_for('index') }}">回到地图 <span class="en">Back to map</span></a>
+  </section>
+</main>
+{% endblock %}

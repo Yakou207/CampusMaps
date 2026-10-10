@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>食堂标注工具</title>
+<link rel="stylesheet" href="../static/css/tokens.css">
+<link rel="stylesheet" href="../static/css/map.css">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; font: 14px/1.45 -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; color: #2d2a26; background: #f1eee8; }
+  #app { display: flex; height: 100%; }
+  #map { position: relative; flex: 1; overflow: hidden; touch-action: none; }
+  #stage { position: absolute; left: 0; top: 0; }
+  #stage svg { display: block; }
+  #hint { position: absolute; left: 12px; bottom: 12px; padding: 6px 10px; background: rgba(255,255,255,.9); border-radius: 8px; font-size: 12px; color: #6b6358; pointer-events: none; }
+  #moving-tip { position: absolute; left: 50%; top: 12px; transform: translateX(-50%); padding: 8px 14px; background: #2d2a26; color: #fff; border-radius: 8px; display: none; }
+  #map.moving #moving-tip { display: block; }
+  #map.moving { cursor: crosshair !important; }
+
+  /* map states */
+  .building { cursor: pointer; }
+  .campus-map .building:hover .b-fill { fill: #cbbda9; }
+  .campus-map .building.is-canteen .b-fill { fill: #f4b26b; }
+  .campus-map .building.is-target .b-fill { fill: #f7d29f; }
+  .marker { cursor: pointer; }
+  .marker circle { stroke: #fff; stroke-width: 2; }
+  .marker.stall circle { fill: #6a8caf; }
+  .marker.canteen circle { fill: #d9792b; }
+  .marker.ok.stall circle { fill: #3c9a5f; }
+  .marker.ok.canteen circle { fill: #b85a12; }
+  .marker.removed circle { fill: #c44; opacity: .55; }
+  .marker.selected circle { stroke: #2d2a26; stroke-width: 3; }
+  .marker.pending-point circle { fill: none; stroke: #2d2a26; stroke-width: 2; stroke-dasharray: 3 2; }
+
+  /* side panel */
+  #panel { width: 380px; display: flex; flex-direction: column; border-left: 1px solid #ddd5c8; background: #fffdf9; }
+  #panel header { padding: 12px 14px; border-bottom: 1px solid #eee6da; }
+  h1 { font-size: 16px; margin: 0 0 8px; }
+  .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+  button, .btn { font: inherit; font-size: 13px; padding: 5px 10px; border: 1px solid #d6cdbf; background: #fff; border-radius: 6px; cursor: pointer; color: inherit; }
+  button:hover, .btn:hover { background: #f6f1e8; }
+  button.primary { background: #d9792b; border-color: #d9792b; color: #fff; }
+  button.primary:hover { background: #c56a20; }
+  button.danger { color: #b33; }
+  #editor { padding: 12px 14px; border-bottom: 1px solid #eee6da; max-height: 55%; overflow: auto; }
+  #editor:empty::before { content: "点地图上的楼、空地或圆点开始标注"; color: #9a9184; }
+  #editor label { display: block; margin: 8px 0 3px; font-size: 12px; color: #6b6358; }
+  #editor input[type=text], #editor select, #editor textarea, #search { width: 100%; font: inherit; padding: 6px 8px; border: 1px solid #d6cdbf; border-radius: 6px; background: #fff; }
+  #editor textarea { min-height: 54px; resize: vertical; }
+  .row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-top: 10px; }
+  .kind-toggle { display: inline-flex; border: 1px solid #d6cdbf; border-radius: 6px; overflow: hidden; }
+  .kind-toggle button { border: 0; border-radius: 0; }
+  .kind-toggle button.on { background: #2d2a26; color: #fff; }
+  .meta { font-size: 12px; color: #9a9184; margin-top: 8px; }
+  .badge { display: inline-block; font-size: 11px; padding: 1px 6px; border-radius: 10px; background: #eee6da; color: #6b6358; }
+  .badge.ok { background: #dcf0e2; color: #2c7a49; }
+  .badge.removed { background: #f6dcdc; color: #a33; }
+  .nearby { margin-top: 6px; }
+  .nearby div { display: flex; justify-content: space-between; align-items: center; padding: 3px 0; font-size: 13px; }
+
+  #listbox { flex: 1; display: flex; flex-direction: column; min-height: 0; padding: 10px 14px 0; }
+  #tabs { display: flex; gap: 4px; margin: 8px 0; flex-wrap: wrap; }
+  #tabs button.on { background: #2d2a26; color: #fff; border-color: #2d2a26; }
+  #list { flex: 1; overflow: auto; padding-bottom: 12px; }
+  .group { margin-top: 10px; }
+  .group-title { font-size: 12px; color: #9a9184; margin-bottom: 2px; }
+  .item { display: flex; gap: 8px; align-items: center; padding: 5px 6px; border-radius: 6px; cursor: pointer; }
+  .item:hover { background: #f6f1e8; }
+  .item.selected { background: #fbe7d3; }
+  .item .dot { width: 9px; height: 9px; border-radius: 50%; flex: none; background: #6a8caf; }
+  .item.canteen .dot { background: #d9792b; width: 11px; height: 11px; }
+  .item.ok .dot { background: #3c9a5f; }
+  .item.removed { opacity: .5; text-decoration: line-through; }
+  .item .name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .item.child { padding-left: 22px; }
+
+  @media (max-width: 760px) {
+    #app { flex-direction: column; }
+    #map { flex: none; height: 55%; }
+    #panel { width: 100%; flex: 1; min-height: 0; border-left: 0; border-top: 1px solid #ddd5c8; }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <main id="map">
+    <div id="stage"></div>
+    <div id="moving-tip">点击地图上的新位置（Esc 取消）</div>
+    <div id="hint">滚轮/双指缩放 · 拖动平移 · 点楼或空地添加 · 点圆点编辑 · Esc 取消选择</div>
+  </main>
+  <aside id="panel">
+    <header>
+      <h1>食堂 / 摊位标注</h1>
+      <div class="actions">
+        <button id="btn-export" class="primary">导出 JSON</button>
+        <label class="btn">导入 JSON<input id="file-import" type="file" accept="application/json,.json" hidden></label>
+        <button id="btn-fit">全图</button>
+        <button id="btn-reset" class="danger">重置为 OSM 数据</button>
+      </div>
+      <div class="meta">自动保存在本浏览器。换电脑或清缓存前请先导出。</div>
+    </header>
+    <section id="editor"></section>
+    <section id="listbox">
+      <input id="search" type="search" placeholder="搜索名称…">
+      <div id="tabs"></div>
+      <div id="list"></div>
+    </section>
+  </aside>
+</div>
+<script src="../static/vendor/panzoom-4.6.2.min.js"></script>
+<script src="annotate.js"></script>
+</body>
+</html>
