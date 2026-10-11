@@ -39,9 +39,11 @@
   }
   .panel.is-dragging { transition: none; }
   .panel.is-open .panel-card { animation: none; }
-  .panel-card { height: 88dvh; max-height: none; border-radius: 18px 18px 0 0; border-bottom: 0; }
+  .panel-card { height: calc(100dvh - max(var(--space-sm), env(safe-area-inset-top))); max-height: none; border-radius: 18px 18px 0 0; border-bottom: 0; }
   .panel-arrow { display: none !important; }
-  .panel-grip { display: grid; place-items: center; height: 22px; flex: none; cursor: grab; touch-action: none; }
+  .panel-grip { display: grid; place-items: center; height: 28px; flex: none; cursor: pointer; touch-action: none; }
+  .panel[data-sheet="half"] .panel-body { overflow-y: hidden; touch-action: none; }
+  .panel[data-sheet="full"] .panel-body { touch-action: pan-y; }
   .panel-grip span { width: 44px; height: 5px; border-radius: var(--radius-pill); background: var(--color-rule); }
   .panel-body { padding-bottom: env(safe-area-inset-bottom); }
 }

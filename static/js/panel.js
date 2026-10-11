@@ -155,37 +155,59 @@ export function createPanel({ root, map, store, onChange }) {
   }
   function setSheet(state) {
     sheetState = state;
+    root.dataset.sheet = state;
     root.style.setProperty('--sheet-y', `${sheetY(state)}px`);
   }
+
+  // Drag the sheet between half height and full height (pinned to the top of the screen).
+  // The handle always drags. The content drags too while the sheet is half open, and when
+  // it is full but already scrolled to the top and pulled down; otherwise it just scrolls.
   {
-    let start = null;
-    const down = (e) => {
-      if (isDesktop()) return;
-      start = { y: e.clientY, base: sheetY(sheetState), t: performance.now() };
-      root.classList.add('is-dragging');
-      grip.setPointerCapture(e.pointerId);
+    let drag = null;
+    const start = (e) => {
+      if (isDesktop() || e.touches.length !== 1) return;
+      drag = { y0: e.touches[0].clientY, base: sheetY(sheetState), t0: performance.now(), active: false,
+        onContent: body.contains(e.target) };
     };
     const move = (e) => {
-      if (!start) return;
-      root.style.setProperty('--sheet-y', `${Math.max(0, start.base + e.clientY - start.y)}px`);
+      if (!drag) return;
+      const dy = e.touches[0].clientY - drag.y0;
+      if (!drag.active) {
+        if (drag.onContent && sheetState === 'full' && body.scrollTop <= 0 && dy > 0) e.preventDefault();
+        if (Math.abs(dy) < 6) return; // still a tap
+        const scrollsInstead = drag.onContent && sheetState === 'full' && !(dy > 0 && body.scrollTop <= 0);
+        if (scrollsInstead) { drag = null; return; }
+        drag.active = true;
+        drag.y0 += dy; // start moving from here, so the sheet doesn't jump
+        drag.t0 = performance.now();
+        root.classList.add('is-dragging');
+        return;
+      }
+      e.preventDefault();
+      root.style.setProperty('--sheet-y', `${Math.max(0, drag.base + dy)}px`);
     };
-    const up = (e) => {
-      if (!start) return;
-      const dy = e.clientY - start.y;
-      const speed = dy / Math.max(1, performance.now() - start.t); // px per ms
+    const end = (e) => {
+      const d = drag;
+      drag = null;
+      if (!d?.active) return;
       root.classList.remove('is-dragging');
-      const y = start.base + dy;
-      start = null;
-      if (speed > 0.6 || y > sheetY('half') + 120) {
-        if (sheetState === 'full' && y < sheetY('half') + 60) setSheet('half');
-        else close();
-      } else if (speed < -0.6 || y < sheetY('half') / 2) setSheet('full');
-      else setSheet('half');
+      const dy = (e.changedTouches[0]?.clientY ?? d.y0) - d.y0;
+      const speed = dy / Math.max(1, performance.now() - d.t0); // px per ms, + is downwards
+      const y = d.base + dy;
+      const half = sheetY('half');
+      let target;
+      if (speed > 0.5) target = sheetState === 'full' ? 'half' : 'closed';
+      else if (speed < -0.5 || y < half / 2) target = 'full';
+      else if (y > half + (sheetY('closed') - half) / 2) target = 'closed';
+      else target = 'half';
+      if (target === 'closed') close();
+      else setSheet(target);
     };
-    grip.addEventListener('pointerdown', down);
-    grip.addEventListener('pointermove', move);
-    grip.addEventListener('pointerup', up);
-    grip.addEventListener('pointercancel', up);
+    card.addEventListener('touchstart', start, { passive: true });
+    card.addEventListener('touchmove', move, { passive: false });
+    card.addEventListener('touchend', end);
+    card.addEventListener('touchcancel', end);
+    grip.addEventListener('click', () => { if (!isDesktop()) setSheet(sheetState === 'full' ? 'half' : 'full'); });
   }
 
   // ---------- views ----------

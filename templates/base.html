@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="{% block viewport %}width=device-width, initial-scale=1, viewport-fit=cover{% endblock %}">
   <title>{% block title %}BNBU 食堂地图 · Campus Food Map{% endblock %}</title>
   <meta name="description" content="北师港浸大校园食堂与摊位地图：找吃的、看评分、写评价。A bilingual map of every canteen and food stall on the BNBU campus, rated by students.">
   <link rel="icon" href="{{ url_for('static', filename='img/favicon.svg') }}" type="image/svg+xml">

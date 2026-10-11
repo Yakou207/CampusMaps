@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% block viewport %}width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover{% endblock %}
 {% block head %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/map.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/panel.css') }}">

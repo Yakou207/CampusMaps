@@ -7,6 +7,11 @@ import { h } from './util.js';
 
 const status = document.getElementById('map-status');
 
+// iOS Safari ignores user-scalable=no, so cancel its page-zoom gestures directly.
+for (const type of ['gesturestart', 'gesturechange']) {
+  document.addEventListener(type, (e) => e.preventDefault(), { passive: false });
+}
+
 function makeStore(data) {
   const canteens = new Map(data.canteens.map((c) => [c.id, c]));
   const stalls = new Map(data.stalls.map((s) => [s.id, s]));

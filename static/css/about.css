@@ -32,6 +32,7 @@
   display: grid; gap: var(--space-lg); padding: var(--space-lg);
   background: var(--color-surface); border: var(--rule-ink); border-radius: var(--radius-md); box-shadow: var(--shadow-paper);
 }
+.suggest-form[hidden], .suggest-done[hidden] { display: none; }
 .suggest-form .btn-primary { justify-self: start; }
 .kind-field { border: 0; margin: 0; padding: 0; min-width: 0; }
 .kind-field legend { margin-bottom: var(--space-xs); padding: 0; }
