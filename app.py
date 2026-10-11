@@ -3,6 +3,7 @@
 Run locally:   flask --app app run --debug     (then open http://127.0.0.1:5000)
 """
 import re
+import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -16,6 +17,12 @@ CLIENT_ID_RE = re.compile(r"^[A-Za-z0-9-]{16,64}$")
 COMMENT_MAX = 200
 SUGGESTION_KINDS = {"new_stall", "correction", "other"}
 SUGGESTIONS_PER_HOUR = 5
+# Write limits for ratings and suggestions together, per browser id (never per network address,
+# because many students share one address on campus Wi-Fi): at most 20 in 30 s and 100 in 5 min;
+# 200 attempts in 10 min, rejected ones included, block that browser id for an hour.
+# nginx additionally slows down any single address sending more than a few writes per second.
+WRITE_LIMITS = [(30, 20), (300, 100)]
+BAN_WINDOW, BAN_COUNT, BAN_SECONDS = 600, 200, 3600
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_mapping(DATABASE=str(Path(app.instance_path) / "campusmaps.db"))
@@ -39,6 +46,30 @@ def clean_text(value, max_len):
     """Trim, drop control characters (keeping newlines) and report whether it was too long."""
     text = "".join(ch for ch in str(value or "") if ch == "\n" or ch >= " ").strip()
     return text, len(text) > max_len
+
+
+@app.before_request
+def limit_writes():
+    if request.method != "POST" or not request.path.startswith("/api/"):
+        return None
+    cid, at = client_id(), time.time()
+    if not cid:
+        return None  # the route rejects requests without a valid browser id
+    until = db.ban_until(cid, at)
+    if until:
+        minutes = max(1, round((until - at) / 60))
+        return bad_request({"form": f"提交过于频繁，已被暂时限制，请 {minutes} 分钟后再试 · "
+                                    f"Too many submissions. Try again in {minutes} min."}, 403)
+    db.record_write(cid, at)
+    if db.writes_since(cid, at - BAN_WINDOW) >= BAN_COUNT:
+        db.ban(cid, at + BAN_SECONDS, f"{BAN_COUNT}+ writes in {BAN_WINDOW // 60} min")
+        app.logger.warning("blocked browser id %s for flooding the write API", cid)
+        return bad_request({"form": "提交过于频繁，已被暂时限制，请 60 分钟后再试 · "
+                                    "Too many submissions. Try again in 60 min."}, 403)
+    for seconds, limit in WRITE_LIMITS:
+        if db.writes_since(cid, at - seconds) > limit:
+            return bad_request({"form": "操作太频繁了，请稍后再试 · You're going too fast — please wait a moment."}, 429)
+    return None
 
 
 # ---------- pages ----------

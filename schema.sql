@@ -24,3 +24,21 @@ CREATE TABLE IF NOT EXISTS suggestions (
     client_id   TEXT    NOT NULL,
     created_at  TEXT    NOT NULL
 );
+
+-- Every write attempt (rating or suggestion) per browser id, used for rate limiting.
+-- Rows older than a day are deleted. No network addresses are stored.
+CREATE TABLE IF NOT EXISTS write_attempts (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    client_id   TEXT    NOT NULL,
+    at          REAL    NOT NULL               -- unix time in seconds
+);
+CREATE INDEX IF NOT EXISTS idx_write_attempts_client ON write_attempts (client_id, at);
+CREATE INDEX IF NOT EXISTS idx_write_attempts_at ON write_attempts (at);
+
+-- Browser ids blocked from writing after flooding the API.
+CREATE TABLE IF NOT EXISTS client_bans (
+    client_id   TEXT    PRIMARY KEY,
+    until       REAL    NOT NULL,              -- unix time the ban ends
+    reason      TEXT    NOT NULL,
+    created_at  TEXT    NOT NULL
+);

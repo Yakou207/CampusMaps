@@ -103,3 +103,35 @@ def save_suggestion(kind, canteen_id, stall_name, message, contact, client_id):
         (kind, canteen_id, stall_name, message, contact, client_id, now()),
     )
     db.commit()
+
+
+# ---------- rate limiting ----------
+
+def record_write(client_id, at):
+    """Log one write attempt and drop entries older than a day."""
+    db = get_db()
+    db.execute("INSERT INTO write_attempts (client_id, at) VALUES (?, ?)", (client_id, at))
+    db.execute("DELETE FROM write_attempts WHERE at < ?", (at - 86400,))
+    db.commit()
+
+
+def writes_since(client_id, since):
+    return get_db().execute(
+        "SELECT COUNT(*) FROM write_attempts WHERE client_id = ? AND at >= ?", (client_id, since)).fetchone()[0]
+
+
+def ban_until(client_id, at):
+    """End time of an active ban on this browser id, or None."""
+    row = get_db().execute("SELECT until FROM client_bans WHERE client_id = ? AND until > ?", (client_id, at)).fetchone()
+    return row[0] if row else None
+
+
+def ban(client_id, until, reason):
+    db = get_db()
+    db.execute(
+        "INSERT INTO client_bans (client_id, until, reason, created_at) VALUES (?, ?, ?, ?) "
+        "ON CONFLICT (client_id) DO UPDATE SET until = excluded.until, reason = excluded.reason, "
+        "created_at = excluded.created_at",
+        (client_id, until, reason, now()),
+    )
+    db.commit()
