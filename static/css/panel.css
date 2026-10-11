@@ -136,7 +136,7 @@
 .summary-avg { display: grid; justify-items: center; gap: 2px; }
 .summary-avg strong { font-family: var(--font-display); font-size: 2.6rem; font-weight: 500; line-height: 1; }
 .summary-avg .stars { font-size: 0.9rem; }
-.summary-avg span { font-size: var(--text-xs); color: var(--color-muted); white-space: nowrap; }
+.summary-count { font-size: var(--text-xs); color: var(--color-muted); white-space: nowrap; }
 .dist { display: grid; gap: 3px; margin: 0; padding: 0; list-style: none; }
 .dist li { display: grid; grid-template-columns: 1.6rem minmax(0, 1fr) 1.6rem; gap: var(--space-xs); align-items: center; font-size: var(--text-xs); color: var(--color-muted); }
 .dist-bar { height: 7px; border-radius: var(--radius-pill); background: var(--color-paper-3); overflow: hidden; }

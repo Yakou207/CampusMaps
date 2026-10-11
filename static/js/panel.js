@@ -337,7 +337,7 @@ export function createPanel({ root, map, store, onChange }) {
       h('div', { class: 'summary-avg' },
         h('strong', {}, avg == null ? '–' : avg.toFixed(1)),
         stars(avg, starLabel(avg, count)),
-        h('span', {}, `${count} 条评分 · ${count} rating${count === 1 ? '' : 's'}`)),
+        h('span', { class: 'summary-count' }, `${count} 条评分 · ${count} rating${count === 1 ? '' : 's'}`)),
       h('ul', { class: 'dist', 'aria-label': '评分分布 Rating breakdown' }, [5, 4, 3, 2, 1].map((n) => h('li', {},
         h('span', {}, `${n}★`),
         h('span', { class: 'dist-bar' }, h('span', { style: `transform:scaleX(${distribution[n] / max})` })),
