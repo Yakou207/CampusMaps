@@ -2,17 +2,19 @@
 
 Run locally:   flask --app app run --debug     (then open http://127.0.0.1:5000)
 """
+import os
 import re
+import secrets
 import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from flask import Flask, abort, jsonify, render_template, request
 
+import admin
 import database as db
-from places import CATEGORIES, load_places
+from places import CATEGORIES
 
-BASE = Path(__file__).resolve().parent
 CLIENT_ID_RE = re.compile(r"^[A-Za-z0-9-]{16,64}$")
 COMMENT_MAX = 200
 SUGGESTION_KINDS = {"new_stall", "correction", "other"}
@@ -27,9 +29,24 @@ BAN_WINDOW, BAN_COUNT, BAN_SECONDS = 600, 200, 3600
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_mapping(DATABASE=str(Path(app.instance_path) / "campusmaps.db"))
 app.json.ensure_ascii = False  # send Chinese as-is instead of \u escapes
-CANTEENS, STALLS = load_places(BASE / "data")
 db.init_db(app.config["DATABASE"])
 app.teardown_appcontext(db.close_db)
+
+
+def load_secret_key(instance_path):
+    """Key that signs admin login sessions. Generated once and kept in instance/ (never in the repository)."""
+    path = Path(instance_path) / "secret_key"
+    try:  # create it atomically, so workers starting together all end up with the same key
+        fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        with os.fdopen(fd, "w") as f:
+            f.write(secrets.token_hex(32))
+    except FileExistsError:
+        pass
+    return path.read_text().strip()
+
+
+app.secret_key = load_secret_key(app.instance_path)
+admin.register(app)  # the admin panel at /monitor (admin/ folder)
 
 
 def client_id():
@@ -81,25 +98,27 @@ def index():
 
 @app.get("/about")
 def about():
-    canteens = sorted(CANTEENS.values(), key=lambda c: (c["area"], c["id"]))
-    return render_template("about.html", canteens=canteens, canteen_count=len(CANTEENS), stall_count=len(STALLS))
+    canteens = db.get_canteens()
+    ordered = sorted(canteens.values(), key=lambda c: (c["area"], c["id"]))
+    return render_template("about.html", canteens=ordered, canteen_count=len(canteens), stall_count=len(db.get_stalls()))
 
 
 # ---------- API ----------
 
 @app.get("/api/places")
 def api_places():
+    canteens_by_id, stalls_by_id = db.get_canteens(), db.get_stalls()
     totals = db.rating_totals()
     stalls = []
-    canteen_totals = {cid: [0, 0] for cid in CANTEENS}
-    for s in STALLS.values():
+    canteen_totals = {cid: [0, 0] for cid in canteens_by_id}
+    for s in stalls_by_id.values():
         total, n = totals.get(s["id"], (0, 0))
         stalls.append({**s, "avg": round(total / n, 2) if n else None, "count": n})
         if s["canteen_id"]:
             canteen_totals[s["canteen_id"]][0] += total
             canteen_totals[s["canteen_id"]][1] += n
     canteens = []
-    for c in CANTEENS.values():
+    for c in canteens_by_id.values():
         total, n = canteen_totals[c["id"]]
         # canteen score = mean of every rating given to its stalls
         canteens.append({**c, "avg": round(total / n, 2) if n else None, "count": n})
@@ -108,7 +127,7 @@ def api_places():
 
 @app.get("/api/stalls/<stall_id>/ratings")
 def api_stall_ratings(stall_id):
-    if stall_id not in STALLS:
+    if not db.stall_exists(stall_id):
         abort(404)
     cid = client_id()
     return jsonify({
@@ -127,7 +146,7 @@ def api_save_rating():
     if not cid:
         errors["client"] = "无法识别你的浏览器，请刷新页面后重试 · We couldn't identify your browser. Refresh and try again."
     stall_id = data.get("stall_id")
-    if stall_id not in STALLS:
+    if not isinstance(stall_id, str) or not db.stall_exists(stall_id):
         errors["stall_id"] = "找不到这个摊位 · That stall doesn't exist."
     stars = data.get("stars")
     if not isinstance(stars, int) or isinstance(stars, bool) or not 1 <= stars <= 5:
@@ -153,7 +172,7 @@ def api_save_suggestion():
     if kind not in SUGGESTION_KINDS:
         errors["kind"] = "请选择反馈类型 · Choose what you're telling us about."
     canteen_id = data.get("canteen_id") or None
-    if canteen_id and canteen_id not in CANTEENS:
+    if canteen_id and (not isinstance(canteen_id, str) or not db.canteen_exists(canteen_id)):
         errors["canteen_id"] = "请从列表里选择地点 · Pick a place from the list."
     stall_name, too_long = clean_text(data.get("stall_name"), 40)
     if too_long:

@@ -1,0 +1,29 @@
+{% extends "admin/base.html" %}
+{% block title %}账号{% endblock %}
+{% block content %}
+<h1>后台账号</h1>
+<table class="card"><thead><tr><th>用户名</th><th>权限</th><th>状态</th><th>最近登录</th><th></th></tr></thead><tbody>
+{% for a in items %}
+<tr class="{{ 'off' if not a.active }}">
+  <td>{{ a.username }}{% if a.username == me.username %} <span class="muted">（你）</span>{% endif %}</td>
+  <td>{{ '超级管理员' if a.role == 'super' else '组员' }}</td>
+  <td>{{ '启用' if a.active else '已停用' }}{% if a.must_change_password %} · 待改密码{% endif %}</td>
+  <td>{{ a.last_login|local_time }}</td>
+  <td class="actions">
+    {% if a.username != me.username %}
+    <form method="post" action="{{ url_for('admin.account_action', username=a.username, action='disable' if a.active else 'enable') }}"><input type="hidden" name="csrf" value="{{ csrf_token() }}"><button class="btn {{ 'danger' if a.active }}">{{ '停用' if a.active else '启用' }}</button></form>
+    <form method="post" action="{{ url_for('admin.account_action', username=a.username, action='reset') }}"><input type="hidden" name="csrf" value="{{ csrf_token() }}"><input name="password" type="password" minlength="10" placeholder="临时密码" autocomplete="new-password" required><button class="btn">重置密码</button></form>
+    {% endif %}
+  </td>
+</tr>
+{% endfor %}
+</tbody></table>
+<form class="card form narrow" method="post">
+  <h2>新建账号</h2>
+  <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+  <label>用户名（小写字母、数字、. _ -）<input name="username" maxlength="32" required autocomplete="off"></label>
+  <label>权限<select name="role"><option value="editor">组员（审核评论和建议、编辑摊位）</option><option value="super">超级管理员</option></select></label>
+  <label>初始密码（至少 10 位，对方首次登录后必须修改）<input name="password" type="password" minlength="10" required autocomplete="new-password"></label>
+  <button class="btn primary">创建</button>
+</form>
+{% endblock %}

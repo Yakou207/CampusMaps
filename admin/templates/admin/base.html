@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>{% block title %}后台{% endblock %} · Campus Food Map</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tokens.css') }}">
+  <link rel="stylesheet" href="{{ url_for('admin.static', filename='admin.css') }}">
+</head>
+<body>
+{% if me %}
+<header class="bar">
+  <a class="admin-brand" href="{{ url_for('admin.dashboard') }}">食堂地图 · 后台</a>
+  <nav class="nav">
+    <a href="{{ url_for('admin.dashboard') }}" class="{{ 'on' if request.endpoint == 'admin.dashboard' }}">概览</a>
+    <a href="{{ url_for('admin.comments') }}" class="{{ 'on' if request.endpoint == 'admin.comments' }}">评论审核{% if nav_counts.comments %}<b class="badge">{{ nav_counts.comments }}</b>{% endif %}</a>
+    <a href="{{ url_for('admin.suggestions') }}" class="{{ 'on' if request.endpoint in ('admin.suggestions', 'admin.suggestion') }}">建议{% if nav_counts.suggestions %}<b class="badge">{{ nav_counts.suggestions }}</b>{% endif %}</a>
+    <a href="{{ url_for('admin.stalls') }}" class="{{ 'on' if request.endpoint in ('admin.stalls', 'admin.stall_edit', 'admin.stall_new') }}">摊位</a>
+    {% if me.role == 'super' %}
+    <a href="{{ url_for('admin.bans') }}" class="{{ 'on' if request.endpoint == 'admin.bans' }}">封禁</a>
+    <a href="{{ url_for('admin.accounts') }}" class="{{ 'on' if request.endpoint == 'admin.accounts' }}">账号</a>
+    <a href="{{ url_for('admin.audit') }}" class="{{ 'on' if request.endpoint == 'admin.audit' }}">操作记录</a>
+    {% endif %}
+  </nav>
+  <div class="who">
+    <span>{{ me.username }}<small>{{ '超级管理员' if me.role == 'super' else '组员' }}</small></span>
+    <a href="{{ url_for('admin.password') }}">改密码</a>
+    <form method="post" action="{{ url_for('admin.logout') }}"><input type="hidden" name="csrf" value="{{ csrf_token() }}"><button class="link">退出</button></form>
+  </div>
+</header>
+{% endif %}
+<main class="main">
+  {% for cat, msg in get_flashed_messages(with_categories=true) %}<p class="flash {{ cat }}" role="status">{{ msg }}</p>{% endfor %}
+  {% block content %}{% endblock %}
+</main>
+{% block scripts %}{% endblock %}
+</body>
+</html>

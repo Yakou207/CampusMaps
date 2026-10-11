@@ -1,0 +1,13 @@
+{% extends "admin/base.html" %}
+{% block title %}登录{% endblock %}
+{% block content %}
+<form class="card login" method="post" action="{{ url_for('admin.login') }}">
+  <h1>后台登录</h1>
+  <p class="muted">Campus Food Map · Admin</p>
+  <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+  <input type="hidden" name="next" value="{{ next }}">
+  <label>用户名<input name="username" autocomplete="username" required autofocus></label>
+  <label>密码<input name="password" type="password" autocomplete="current-password" required></label>
+  <button class="btn primary">登录</button>
+</form>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "admin/base.html" %}
+{% block title %}建议{% endblock %}
+{% block content %}
+<h1>用户建议</h1>
+<div class="tabs">
+  {% for key, label in [('open', '待处理'), ('done', '已处理'), ('rejected', '已拒绝')] %}
+  <a href="{{ url_for('admin.suggestions', status=key) }}" class="{{ 'on' if status == key }}">{{ label }}</a>
+  {% endfor %}
+</div>
+{% if items %}
+<table class="card">
+  <thead><tr><th>#</th><th>类型</th><th>地点</th><th>摊位名</th><th>内容</th><th>时间</th>{% if status != 'open' %}<th>处理</th>{% endif %}</tr></thead>
+  <tbody>
+  {% for s in items %}
+  <tr>
+    <td><a href="{{ url_for('admin.suggestion', suggestion_id=s.id) }}">#{{ s.id }}</a></td>
+    <td>{{ {'new_stall': '新摊位', 'correction': '纠错', 'other': '其他'}[s.kind] }}</td>
+    <td>{{ s.canteen_name or '—' }}</td>
+    <td>{{ s.stall_name or '—' }}</td>
+    <td class="clip"><a href="{{ url_for('admin.suggestion', suggestion_id=s.id) }}">{{ s.message }}</a></td>
+    <td class="nowrap">{{ s.created_at|local_time }}</td>
+    {% if status != 'open' %}<td class="small">{{ s.handled_by }}<br><span class="muted">{{ s.admin_note }}</span></td>{% endif %}
+  </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}<p class="empty">{{ '没有待处理的建议 🎉' if status == 'open' else '这里还没有内容。' }}</p>{% endif %}
+{% endblock %}

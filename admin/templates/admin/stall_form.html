@@ -1,0 +1,43 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ '编辑 ' ~ stall.name_zh if stall else '新建摊位' }}{% endblock %}
+{% block content %}
+<p><a href="{{ url_for('admin.stalls') }}">← 全部摊位</a></p>
+<h1>{{ '编辑：' ~ stall.name_zh ~ '（' ~ stall.id ~ '）' if stall else '新建摊位' }}</h1>
+{% if suggestion %}
+<section class="card note">
+  <b>来自建议 #{{ suggestion.id }}</b>（{{ {'new_stall': '新摊位', 'correction': '纠错', 'other': '其他'}[suggestion.kind] }}）：
+  <p class="comment">{{ suggestion.message }}</p>
+  {% if suggestion.contact %}<p class="muted small">联系方式：{{ suggestion.contact }}</p>{% endif %}
+</section>
+{% endif %}
+{% if errors %}<p class="flash error">{% for e in errors.values() %}{{ e }} {% endfor %}</p>{% endif %}
+<form class="card form" method="post">
+  <input type="hidden" name="csrf" value="{{ csrf_token() }}">
+  {% if suggestion %}<input type="hidden" name="suggestion" value="{{ suggestion.id }}">{% endif %}
+  <div class="grid">
+    <label>中文名 *<input name="name_zh" value="{{ v.name_zh }}" maxlength="40" required></label>
+    <label>英文名<input name="name_en" value="{{ v.name_en }}" maxlength="60"></label>
+    <label>类别 *<select name="category">{% for c in categories %}<option value="{{ c.id }}" {{ 'selected' if v.category == c.id }}>{{ c.zh }} · {{ c.en }}</option>{% endfor %}</select></label>
+    <label>所属食堂<select name="canteen_id" id="canteen">
+      <option value="">— 独立门店（在下方地图上点出位置）—</option>
+      {% for c in canteens %}<option value="{{ c.id }}" {{ 'selected' if v.canteen_id == c.id }}>{{ c.name_zh }} · {{ c.name_en }}</option>{% endfor %}
+    </select></label>
+    <label>人均价格<input name="price" value="{{ v.price }}" maxlength="30" placeholder="如 ¥15–25"></label>
+    <label>营业时间<input name="hours" value="{{ v.hours }}" maxlength="40" placeholder="如 10:30–21:00"></label>
+    <label class="wide">中文简介<textarea name="desc_zh" maxlength="200" rows="2">{{ v.desc_zh }}</textarea></label>
+    <label class="wide">英文简介<textarea name="desc_en" maxlength="300" rows="2">{{ v.desc_en }}</textarea></label>
+    <label class="check"><input type="checkbox" name="pick" value="1" {{ 'checked' if v.pick }}> 列入「新生推荐」</label>
+  </div>
+  <fieldset class="locator" id="locator">
+    <legend>位置（独立门店必填）</legend>
+    <p class="muted small">属于食堂的摊位会显示在食堂标记里，不需要单独定位。独立门店：在地图上点击它的位置，可滚动、用按钮缩放。</p>
+    <div class="zoom"><button type="button" class="btn" data-zoom="1.5">放大</button><button type="button" class="btn" data-zoom="0.667">缩小</button> <span id="coords" class="muted small"></span></div>
+    <div class="picker" id="picker" data-bounds='{{ bounds|tojson }}'></div>
+    <input type="hidden" name="lat" id="lat" value="{{ v.lat if v.lat is not none }}">
+    <input type="hidden" name="lon" id="lon" value="{{ v.lon if v.lon is not none }}">
+  </fieldset>
+  {% if suggestion and suggestion.status == 'open' %}<label class="check"><input type="checkbox" name="close_suggestion" value="1" checked> 保存后把建议 #{{ suggestion.id }} 标记为已处理</label>{% endif %}
+  <div class="actions"><button class="btn primary">{{ '保存修改' if stall else '上线这个摊位' }}</button><a class="btn" href="{{ url_for('admin.stalls') }}">取消</a></div>
+</form>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('admin.static', filename='admin.js') }}"></script>{% endblock %}

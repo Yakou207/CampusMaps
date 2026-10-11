@@ -1,0 +1,34 @@
+{% extends "admin/base.html" %}
+{% block title %}建议 #{{ item.id }}{% endblock %}
+{% block content %}
+<p><a href="{{ url_for('admin.suggestions') }}">← 全部建议</a></p>
+<h1>建议 #{{ item.id }} · {{ {'new_stall': '新摊位', 'correction': '纠错', 'other': '其他'}[item.kind] }}</h1>
+<section class="card">
+  <dl class="facts">
+    <dt>地点</dt><dd>{{ item.canteen_name or '未指定 / 独立门店' }}</dd>
+    <dt>摊位名</dt><dd>{{ item.stall_name or '—' }}</dd>
+    <dt>内容</dt><dd class="comment">{{ item.message }}</dd>
+    <dt>联系方式</dt><dd>{{ item.contact or '—' }}</dd>
+    <dt>提交时间</dt><dd>{{ item.created_at|local_time }}</dd>
+    <dt>状态</dt><dd>{{ {'open': '待处理', 'done': '已处理', 'rejected': '已拒绝'}[item.status] }}{% if item.handled_by %} · {{ item.handled_by }} {{ item.handled_at|local_time }} {{ item.admin_note }}{% endif %}</dd>
+  </dl>
+</section>
+{% if item.status == 'open' %}
+<section class="card">
+  <h2>处理</h2>
+  {% if item.kind == 'new_stall' %}
+  <p><a class="btn primary" href="{{ url_for('admin.stall_new', suggestion=item.id) }}">按这条建议新建摊位 →</a></p>
+  {% endif %}
+  {% if related %}
+  <p class="muted">修改已有摊位（保存时可一并把这条建议标为已处理）：</p>
+  <ul class="pick-list">{% for s in related %}<li><a href="{{ url_for('admin.stall_edit', stall_id=s.id, suggestion=item.id) }}">{{ s.name_zh }}</a> <span class="muted">{{ s.canteen_name or '独立门店' }} · {{ s.id }}</span></li>{% endfor %}</ul>
+  {% endif %}
+  <div class="actions">
+    <form method="post" action="{{ url_for('admin.suggestion_action', suggestion_id=item.id, action='done') }}"><input type="hidden" name="csrf" value="{{ csrf_token() }}"><input name="note" placeholder="备注（可选）"><button class="btn">标记为已处理</button></form>
+    <form method="post" action="{{ url_for('admin.suggestion_action', suggestion_id=item.id, action='reject') }}"><input type="hidden" name="csrf" value="{{ csrf_token() }}"><input name="note" placeholder="拒绝原因（可选）"><button class="btn danger">拒绝</button></form>
+  </div>
+</section>
+{% else %}
+<form method="post" action="{{ url_for('admin.suggestion_action', suggestion_id=item.id, action='reopen') }}"><input type="hidden" name="csrf" value="{{ csrf_token() }}"><button class="btn">重新打开</button></form>
+{% endif %}
+{% endblock %}

@@ -349,7 +349,9 @@ export function createPanel({ root, map, store, onChange }) {
       h('div', { class: 'review-head' },
         stars(r.stars, `${r.stars} 星 · ${r.stars} stars`),
         h('span', {}, timeAgo(r.updated_at)),
-        r.mine ? h('span', { class: 'review-me' }, '我 · You') : null),
+        r.mine ? h('span', { class: 'review-me' }, '我 · You') : null,
+        r.mine && r.comment && r.comment_status === 'pending' ? h('span', { class: 'review-pending' }, '审核中 · Pending review') : null,
+        r.mine && r.comment && r.comment_status === 'rejected' ? h('span', { class: 'review-pending' }, '未通过审核，仅你可见 · Not approved') : null),
       r.comment
         ? h('p', { class: 'review-text' }, r.comment)
         : h('p', { class: 'review-text is-blank' }, '只打了分 · Stars only')));
@@ -402,7 +404,7 @@ export function createPanel({ root, map, store, onChange }) {
     const form = h('form', { class: 'rate-form', novalidate: true },
       fieldset,
       h('div', { class: 'field' },
-        h('label', { class: 'field-label', for: `${uid}-comment` }, '一句话评价（可选）· Comment (optional)'),
+        h('label', { class: 'field-label', for: `${uid}-comment` }, '一句话评价（可选，审核通过后公开）· Comment (optional, shown after review)'),
         textarea, commentError),
       h('div', { class: 'rate-foot' }, counter, submit),
       mineNote, status);
@@ -462,7 +464,10 @@ export function createPanel({ root, map, store, onChange }) {
       try {
         const res = await api.saveRating(s.id, n, textarea.value.trim());
         status.className = 'form-status is-ok';
-        status.textContent = res.created ? '已保存，谢谢！· Saved — thanks!' : '已更新你的评分 · Your rating was updated.';
+        const waiting = res.mine?.comment && res.mine.comment_status === 'pending';
+        status.textContent = waiting
+          ? '评分已保存，评论审核通过后公开 · Rating saved — your comment will appear after review.'
+          : res.created ? '已保存，谢谢！· Saved — thanks!' : '已更新你的评分 · Your rating was updated.';
         submit.textContent = '更新评分 Update';
         renderSummary(summaryBox, res.summary);
         form.prefill(res.mine);

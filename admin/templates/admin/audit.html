@@ -1,0 +1,9 @@
+{% extends "admin/base.html" %}
+{% block title %}操作记录{% endblock %}
+{% block content %}
+<h1>操作记录</h1>
+<table class="card"><thead><tr><th>时间</th><th>账号</th><th>操作</th><th>对象</th><th>详情</th></tr></thead><tbody>
+{% for e in items %}<tr><td class="nowrap">{{ e.at|local_time }}</td><td>{{ e.username }}</td><td>{{ e.action }}</td><td>{{ e.target }}</td><td class="clip">{{ e.detail }}</td></tr>
+{% else %}<tr><td colspan="5" class="empty">还没有记录。</td></tr>{% endfor %}
+</tbody></table>
+{% endblock %}

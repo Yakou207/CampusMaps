@@ -1,0 +1,28 @@
+{% extends "admin/base.html" %}
+{% block title %}摊位{% endblock %}
+{% block content %}
+<div class="title-row"><h1>摊位</h1><a class="btn primary" href="{{ url_for('admin.stall_new') }}">＋ 新建摊位</a></div>
+<form class="search" method="get"><input name="q" value="{{ query }}" placeholder="搜索摊位名、食堂或编号"><button class="btn">搜索</button>{% if query %} <a href="{{ url_for('admin.stalls') }}">清除</a>{% endif %}</form>
+<table class="card">
+  <thead><tr><th>编号</th><th>名称</th><th>所在</th><th>类别</th><th>价格 / 营业</th><th>状态</th><th></th></tr></thead>
+  <tbody>
+  {% for s in items %}
+  <tr class="{{ 'off' if not s.active }}">
+    <td>{{ s.id }}</td>
+    <td><a href="{{ url_for('admin.stall_edit', stall_id=s.id) }}">{{ s.name_zh }}</a><br><span class="muted small">{{ s.name_en }}</span></td>
+    <td>{{ s.canteen_name or '独立门店' }}</td>
+    <td>{{ s.category }}</td>
+    <td class="small">{{ s.price or '—' }}<br>{{ s.hours or '—' }}</td>
+    <td>{{ '在线' if s.active else '已下架' }}{% if s.pick %} · 推荐{% endif %}</td>
+    <td class="actions">
+      <a class="btn" href="{{ url_for('admin.stall_edit', stall_id=s.id) }}">编辑</a>
+      {% if me.role == 'super' %}
+      <form method="post" action="{{ url_for('admin.stall_visibility', stall_id=s.id, action='hide' if s.active else 'show') }}" {% if s.active %}data-confirm="从地图上下架「{{ s.name_zh }}」？评分会保留，可以随时恢复。"{% endif %}><input type="hidden" name="csrf" value="{{ csrf_token() }}"><input type="hidden" name="next" value="{{ request.full_path }}"><button class="btn {{ 'danger' if s.active }}">{{ '下架' if s.active else '恢复' }}</button></form>
+      {% endif %}
+    </td>
+  </tr>
+  {% else %}<tr><td colspan="7" class="empty">没有找到摊位。</td></tr>{% endfor %}
+  </tbody>
+</table>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('admin.static', filename='admin.js') }}"></script>{% endblock %}

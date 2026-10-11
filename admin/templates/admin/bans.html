@@ -1,0 +1,14 @@
+{% extends "admin/base.html" %}
+{% block title %}封禁{% endblock %}
+{% block content %}
+<h1>被限制的浏览器</h1>
+<p class="muted">10 分钟内提交达到 200 次的浏览器会被限制提交 1 小时（仍可浏览）。这里可以提前解除。</p>
+{% if items %}
+<table class="card"><thead><tr><th>浏览器编号</th><th>原因</th><th>开始</th><th>结束</th><th></th></tr></thead><tbody>
+{% for b in items %}
+<tr><td class="mono">{{ b.client_id }}</td><td>{{ b.reason }}</td><td>{{ b.created_at|local_time }}</td><td>{{ b.until|local_time }}</td>
+<td><form method="post" action="{{ url_for('admin.unban') }}"><input type="hidden" name="csrf" value="{{ csrf_token() }}"><input type="hidden" name="client_id" value="{{ b.client_id }}"><button class="btn">解封</button></form></td></tr>
+{% endfor %}
+</tbody></table>
+{% else %}<p class="empty">当前没有被限制的浏览器。</p>{% endif %}
+{% endblock %}

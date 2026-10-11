@@ -1,0 +1,27 @@
+{% extends "admin/base.html" %}
+{% block title %}概览{% endblock %}
+{% block content %}
+<h1>概览</h1>
+<div class="stats">
+  <a class="stat {{ 'alert' if o.pending_comments }}" href="{{ url_for('admin.comments') }}"><b>{{ o.pending_comments }}</b>条评论待审核</a>
+  <a class="stat {{ 'alert' if o.open_suggestions }}" href="{{ url_for('admin.suggestions') }}"><b>{{ o.open_suggestions }}</b>条建议待处理</a>
+  <div class="stat"><b>{{ o.ratings }}</b>条评分（近 7 天 {{ o.ratings_week }}）</div>
+  <a class="stat" href="{{ url_for('admin.stalls') }}"><b>{{ o.stalls }}</b>个摊位在线{% if o.hidden_stalls %}，{{ o.hidden_stalls }} 个已下架{% endif %}</a>
+  {% if me.role == 'super' %}<a class="stat" href="{{ url_for('admin.bans') }}"><b>{{ o.bans }}</b>个浏览器被限制</a>{% endif %}
+</div>
+<section class="card">
+  <h2>评分最多的摊位</h2>
+  {% if o.top %}
+  <table><thead><tr><th>摊位</th><th>评分数</th><th>平均分</th></tr></thead><tbody>
+  {% for s in o.top %}<tr><td><a href="{{ url_for('admin.stall_edit', stall_id=s.id) }}">{{ s.name_zh }}</a> <span class="muted">{{ s.name_en }}</span></td><td>{{ s.n }}</td><td>{{ s.avg }}</td></tr>{% endfor %}
+  </tbody></table>
+  {% else %}<p class="muted">还没有评分。</p>{% endif %}
+</section>
+{% if recent %}
+<section class="card">
+  <h2>最近操作</h2>
+  <ul class="log">{% for e in recent %}<li><span class="muted">{{ e.at|local_time }}</span> <b>{{ e.username }}</b> {{ e.action }} {{ e.target }}</li>{% endfor %}</ul>
+  <p><a href="{{ url_for('admin.audit') }}">全部操作记录 →</a></p>
+</section>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "admin/base.html" %}
+{% block title %}评论审核{% endblock %}
+{% block content %}
+<h1>评论审核</h1>
+<p class="muted">星级提交后立即计入平均分；评论文字通过审核后才公开。</p>
+<div class="tabs">
+  {% for key, label in [('pending', '待审核'), ('approved', '已通过'), ('rejected', '已拒绝')] %}
+  <a href="{{ url_for('admin.comments', status=key) }}" class="{{ 'on' if status == key }}">{{ label }}</a>
+  {% endfor %}
+  <form class="search" method="get"><input type="hidden" name="status" value="{{ status }}"><input name="q" value="{{ query }}" placeholder="搜索评论或摊位"><button class="btn">搜索</button></form>
+</div>
+{% for c in items %}
+<article class="card item">
+  <div class="item-head"><b>{{ c.name_zh or c.stall_id }}</b> <span class="muted">{{ c.name_en }}</span> <span class="stars">{{ '★' * c.stars }}{{ '☆' * (5 - c.stars) }}</span> <span class="muted">{{ c.updated_at|local_time }}</span></div>
+  <p class="comment">{{ c.comment }}</p>
+  {% if c.reviewed_by %}<p class="muted small">{{ c.reviewed_by }} 于 {{ c.reviewed_at|local_time }} 处理</p>{% endif %}
+  <div class="actions">
+    {% if status != 'approved' %}<form method="post" action="{{ url_for('admin.comment_action', rating_id=c.id, action='approve') }}"><input type="hidden" name="csrf" value="{{ csrf_token() }}"><input type="hidden" name="next" value="{{ request.full_path }}"><button class="btn primary">通过</button></form>{% endif %}
+    {% if status != 'rejected' %}<form method="post" action="{{ url_for('admin.comment_action', rating_id=c.id, action='reject') }}"><input type="hidden" name="csrf" value="{{ csrf_token() }}"><input type="hidden" name="next" value="{{ request.full_path }}"><button class="btn">{{ '拒绝' if status == 'pending' else '撤下' }}</button></form>{% endif %}
+    {% if me.role == 'super' %}<form method="post" action="{{ url_for('admin.comment_action', rating_id=c.id, action='delete') }}" data-confirm="删除整条评分（包括星级）？此操作不能撤销。"><input type="hidden" name="csrf" value="{{ csrf_token() }}"><input type="hidden" name="next" value="{{ request.full_path }}"><button class="btn danger">删除整条评分</button></form>{% endif %}
+  </div>
+</article>
+{% else %}
+<p class="empty">{{ '没有待审核的评论 🎉' if status == 'pending' else '这里还没有内容。' }}</p>
+{% endfor %}
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('admin.static', filename='admin.js') }}"></script>{% endblock %}
